@@ -16,19 +16,19 @@ chr_data <- read.csv(here("data/2021_us_county_health_counties.csv"))
 
 
 ```{r}
-median_income <- median(as.numeric(chr_data$income_ratio), na.rm = TRUE)
+median_income <- median(as.numeric(chr_data$median_household_income), na.rm = TRUE)
 median_income
 ```
 
 ```{r}
-median_air_pm2.5 <- median(as.numeric(chr_data$air_pollution_avg_daily_pm2.5), na.rm = TRUE)
-median_air_pm2.5
+median_primary_care_physicians <- median(as.numeric(chr_data$primary_care_phys_rate), na.rm = TRUE)
+median_primary_care_physicians
 ```
 
 
 ```{r}
-median_drinking_water_violations<- median((chr_data$drinking_water_violation), na.rm = TRUE)
-median_drinking_water_violations
+median_mental_providers_rate<- median((chr_data$mental_providers_rate), na.rm = TRUE)
+median_mental_providers_rate
 ```
 
 ```{r}
@@ -45,18 +45,37 @@ median_per_uninsured
 
 
 ```{r}
+median_unemployed<- median(as.numeric(chr_data$per_unemployed), na.rm = TRUE)
+median_unemployed
+```
+
+```{r}
+median_per_single_parent_homes<- median(as.numeric(chr_data$per_child_single_parent_homes), na.rm = TRUE)
+median_per_single_parent_homes
+```
+
+
+
+
+
+
+```{r}
 chr_data_disadvantaged<- chr_data %>% 
   select(fips,
-         income_ratio,
-         air_pollution_avg_daily_pm2.5, 
-         drinking_water_violation,
+         median_household_income,
+         primary_care_phys_rate, 
+         mental_providers_rate,
          per_food_insecure,
-         per_uninsured) %>% 
-  mutate(low_income = ifelse(income_ratio < median_income, c(1), c(0))) 
+         per_uninsured,
+         per_unemployed,
+         per_child_single_parent_homes) %>% 
+  mutate(low_income = ifelse(median_household_income < median_income, c(1), c(0))) 
  
 chr_data_disadvantaged <-  chr_data_disadvantaged %>% 
-  mutate(low_air_quality = ifelse(air_pollution_avg_daily_pm2.5 > median_air_pm2.5, c(1), c(0))) 
+  mutate(low_primary_care = ifelse(primary_care_phys_rate < median_primary_care_physicians, c(1), c(0))) 
  
+chr_data_disadvantaged <-  chr_data_disadvantaged %>% 
+  mutate(low_mental_care = ifelse(mental_providers_rate < median_mental_providers_rate, c(1), c(0))) 
 
 chr_data_disadvantaged <-  chr_data_disadvantaged %>%         
   mutate(low_food_security = ifelse(per_food_insecure > median_per_food_insecure, c(1), c(0)))
@@ -65,6 +84,12 @@ chr_data_disadvantaged <-  chr_data_disadvantaged %>%
 chr_data_disadvantaged <-  chr_data_disadvantaged %>%         
   mutate(high_uninsured = ifelse(per_uninsured > median_per_uninsured, c(1), c(0)))
  
+
+chr_data_disadvantaged <-  chr_data_disadvantaged %>%         
+  mutate(high_unemployed = ifelse(per_unemployed > median_unemployed, c(1), c(0)))
+
+chr_data_disadvantaged <-  chr_data_disadvantaged %>%         
+  mutate(high_single_parent_homes= ifelse(per_child_single_parent_homes > median_per_single_parent_homes, c(1), c(0)))
  
 ```
 
@@ -72,7 +97,7 @@ chr_data_disadvantaged <-  chr_data_disadvantaged %>%
 
 ```{r}
 chr_data_disadvantaged <- chr_data_disadvantaged %>% 
-  filter(low_income == 1 & low_air_quality == 1 & low_food_security == 1 & high_uninsured ==1)
+  filter(low_income == 1 & low_primary_care == 1 & low_mental_care == 1 & low_food_security ==1 & high_uninsured ==1 & high_unemployed ==1 & high_single_parent_homes == 1)
   
 ```
 
@@ -112,7 +137,7 @@ join2 <- full_join(join_1, all_nutrient)
 
 all_pressures <- full_join(join2, all_water)
 
-all_pressures <- as.numeric(all_pressures$fips)
+
 
 all_pressures <- all_pressures %>% 
   transform(fips = as.integer(fips))
@@ -147,6 +172,89 @@ total_pressure_per_county_disadvantaged
 ```
 
 ```{r}
+median_black <- median(chr_data$per_black)
+median_black
+```
+
+```{r}
+pop_black <- chr_data %>% 
+  select(fips, per_black)
+
+pop_black <- pop_black %>% 
+  mutate(high_black = ifelse(per_black > median_black, c(1), c(0)))
+
+pop_black <- pop_black %>% 
+  filter(high_black == 1)
+
+all_pressures_black <- inner_join(pop_black, all_pressures)
+
+
+```
+
+```{r}
+sum_black_disturbance <- sum(all_pressures_black$mean_pressure_disturbance)
+
+sum_black_nutrient <- sum(all_pressures_black$mean_pressure_nutrient)
+
+sum_black_water <- sum(all_pressures_black$mean_pressure_water)
+
+sum_black_ghg <- sum(all_pressures_black$mean_pressure_ghg)
+
+
+sum_black_total_pressures <- sum(sum_black_disturbance, sum_black_nutrient, sum_black_water, sum_black_ghg)
+
+sum_black_total_pressures
+
+
+black_county_number <- length(all_pressures_black$fips)
+
+black_county_number
+
+total_pressure_per_county_black<- sum_black_total_pressures/black_county_number
+
+total_pressure_per_county_black
+
+```
+
+```{r}
+pop_low_income <- chr_data %>% 
+  select(fips, median_household_income)
+
+pop_low_income <- pop_low_income %>% 
+  mutate(low_income = ifelse(median_household_income < median_income, c(1), c(0)))
+
+pop_low_income <- pop_low_income %>% 
+  filter(low_income == 1)
+
+all_pressures_low_income <- inner_join(pop_low_income, all_pressures)
+```
+```{r}
+sum_low_income_disturbance <- sum(all_pressures_low_income$mean_pressure_disturbance)
+
+sum_low_income_nutrient <- sum(all_pressures_low_income$mean_pressure_nutrient)
+
+sum_low_income_water <- sum(all_pressures_low_income$mean_pressure_water)
+
+sum_low_income_ghg <- sum(all_pressures_low_income$mean_pressure_ghg)
+
+
+sum_low_income_total_pressures <- sum(sum_low_income_disturbance, sum_low_income_nutrient, sum_low_income_water, sum_low_income_ghg)
+
+sum_low_income_total_pressures
+
+
+low_income_county_number <- length(all_pressures_low_income$fips)
+
+low_income_county_number
+
+total_pressure_per_county_low_income<- sum_low_income_total_pressures/low_income_county_number
+
+total_pressure_per_county_low_income
+
+```
+
+
+```{r}
 sum_disturbance <- sum(all_pressures$mean_pressure_disturbance)
 
 sum_nutrient <- sum(all_pressures$mean_pressure_nutrient)
@@ -167,5 +275,46 @@ county_number
 total_pressure_per_county_even_distribution <- sum_total_pressures/county_number
 
 total_pressure_per_county_even_distribution
+```
+
+
+```{r}
+ghg_normalized <- sum(all_pressures$mean_pressure_ghg)/3224
+ghg_normalized
+
+ghg_black <- sum(all_pressures_black$mean_pressure_ghg)/1566
+ghg_black
+
+ghg_low_income <- sum(all_pressures_low_income$mean_pressure_ghg)/1566
+ghg_low_income
+
+ghg_disadvantaged <- sum(all_pressures_disadvantaged$mean_pressure_ghg)/168
+ghg_disadvantaged
+
+nutrient_normalized <- sum(all_pressures$mean_pressure_nutrient)/3224
+nutrient_normalized
+
+nutrient_black <- sum(all_pressures_black$mean_pressure_nutrient)/1566
+nutrient_black
+
+water_normalized <- sum(all_pressures$mean_pressure_water)/3224
+water_normalized
+
+disturbance_normalized <- sum(all_pressures$mean_pressure_disturbance)/3224
+disturbance_normalized
+```
+
+```{r}
+library(caret)
+
+pre_process <- preProcess(all_pressures, method = c("range"))
+
+normalized <- predict(pre_process, all_pressures)
+
+summary(normalized)
+
+sum(normalized$mean_pressure_ghg)
+sum(normalized$mean_pressure_disturbance)
+
 ```
 
