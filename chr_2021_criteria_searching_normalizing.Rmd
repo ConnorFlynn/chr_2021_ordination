@@ -306,7 +306,7 @@ disturbance_normalized
 ```
 
 ### Normalization
-
+# https://datasharkie.com/how-to-normalize-data-in-r/
 
 ```{r}
 normalize <- function(x) {
@@ -327,22 +327,26 @@ normalized_pressures <- all_pressures %>%
          mean_pressure_nutrient_norm,
          mean_pressure_water_norm)
 
+
+chr_data <- chr_data %>%
+  mutate(fips = sprintf("%05d", fips)) 
+
+normalized_pressures <- normalized_pressures %>%
+  mutate(fips = sprintf("%05d", fips)) 
+
+anti_join_data_chr_normalized_pressures <- anti_join(normalized_pressures, chr_data)
+
+# American Samoa(60) and Puerto Rico(72) are not accounted for in the join
+
 normalized_pressures_chr_data <- inner_join(normalized_pressures, chr_data)
 
 normalized_pressures_chr_data <- normalized_pressures_chr_data %>% 
   group_by(fips) %>% 
-  mutate(cummulative_pressure = mean_pressure_nutrient_norm +
+  mutate(cumulative_pressure = mean_pressure_nutrient_norm +
                                        mean_pressure_ghg_norm +
                                        mean_pressure_disturbance_norm +
                                        mean_pressure_water_norm)
 
-fips_new <- sprintf("%05d", normalized_pressures_chr_data$fips)
-
-normalized_pressures_chr_data <- normalized_pressures_chr_data %>%
-  mutate(fips_new = sprintf("%05d", fips)) 
-
-normalized_pressures_chr_data <- subset(normalized_pressures_chr_data, 
-                                        select = -fips)
 
 write_csv(normalized_pressures_chr_data, here("data/normalized_pressures_chr_data.csv"))
 
@@ -433,21 +437,21 @@ total_pressure_per_county_disadvantaged_norm
 ```{r}
 disadvantaged_high_pressure_counties <- normalized_pressures_chr_data %>% 
   select(fips_new,
-         cummulative_pressure,
+         cumulative_pressure,
          median_household_income)
          # per_food_insecure 
  
 disadvantaged_high_pressure_counties <- disadvantaged_high_pressure_counties %>% 
  mutate(low_income = ifelse(median_household_income < median_income, c(1), c(0)))
 
-median_cummulative_pressure = median(disadvantaged_high_pressure_counties$cummulative_pressure)
+median_cumulative_pressure = median(disadvantaged_high_pressure_counties$cumulative_pressure)
 
 
 disadvantaged_high_pressure_counties <- disadvantaged_high_pressure_counties %>% 
  mutate(low_income = ifelse(median_household_income < median_income, c(1), c(0)))
 
 disadvantaged_high_pressure_counties <- disadvantaged_high_pressure_counties %>% 
- mutate(high_pressure = ifelse(cummulative_pressure > median_cummulative_pressure, c(1), c(0)))
+ mutate(high_pressure = ifelse(cumulative_pressure > median_cumulative_pressure, c(1), c(0)))
 
 #disadvantaged_high_pressure_counties <- disadvantaged_high_pressure_counties %>% 
  # mutate(high_food_insecure = ifelse(per_food_insecure > median_per_food_insecure, c(1), c(0)))
@@ -455,15 +459,15 @@ disadvantaged_high_pressure_counties <- disadvantaged_high_pressure_counties %>%
 disadvantaged_high_pressure_counties <- disadvantaged_high_pressure_counties %>% 
   filter(high_pressure == 1 & low_income ==1) #& high_food_insecure ==1)
 
-sum_disadvantaged_high_pressure_counties_cummulative_pressure <- sum(disadvantaged_high_pressure_counties$cummulative_pressure)
-sum_disadvantaged_high_pressure_counties_cummulative_pressure
+sum_disadvantaged_high_pressure_counties_cumulative_pressure <- sum(disadvantaged_high_pressure_counties$cumulative_pressure)
+sum_disadvantaged_high_pressure_counties_cumulative_pressure
 
 
 disadvantaged_high_pressure_counties_number = length(disadvantaged_high_pressure_counties$fips_new)
 disadvantaged_high_pressure_counties_number
 
 
-total_pressure_per_county_disadvantaged_high_pressure <- sum_disadvantaged_high_pressure_counties_cummulative_pressure/disadvantaged_high_pressure_counties_number
+total_pressure_per_county_disadvantaged_high_pressure <- sum_disadvantaged_high_pressure_counties_cumulative_pressure/disadvantaged_high_pressure_counties_number
 
 total_pressure_per_county_disadvantaged_high_pressure
 
@@ -475,7 +479,7 @@ total_pressure_per_county_disadvantaged_high_pressure
 low_income_counties <- normalized_pressures_chr_data %>%
   select(fips_new,
          median_household_income,
-         cummulative_pressure)
+         cumulative_pressure)
 
 low_income_counties <- low_income_counties %>% 
  mutate(low_income = ifelse(median_household_income < median_income, c(1), c(0)))
@@ -483,19 +487,19 @@ low_income_counties <- low_income_counties %>%
 low_income_counties <- low_income_counties %>% 
   filter(low_income == 1)
 
-median_cummulative_pressure_low_income <- median(low_income_counties$cummulative_pressure)
-median_cummulative_pressure_low_income
+median_cumulative_pressure_low_income <- median(low_income_counties$cumulative_pressure)
+median_cumulative_pressure_low_income
 
-median_cummulative_pressure <- median(normalized_pressures_chr_data$cummulative_pressure)
-median_cummulative_pressure
+median_cumulative_pressure <- median(normalized_pressures_chr_data$cumulative_pressure)
+median_cumulative_pressure
 ```
 
 ```{r}
 high_pressure_counties <- normalized_pressures_chr_data %>% 
   select(fips_new,
          median_household_income,
-         cummulative_pressure) %>% 
-  mutate(high_pressure = ifelse(cummulative_pressure > median_cummulative_pressure,c(1), c(0))) %>% 
+         cumulative_pressure) %>% 
+  mutate(high_pressure = ifelse(cumulative_pressure > median_cumulative_pressure,c(1), c(0))) %>% 
   filter(high_pressure == 1)
 
 
@@ -506,26 +510,26 @@ median_income <- median(normalized_pressures_chr_data$median_household_income, n
 median_income
 
 
-median_cummulative_pressure_high <- median(high_pressure_counties$cummulative_pressure)
-median_cummulative_pressure_high
+median_cumulative_pressure_high <- median(high_pressure_counties$cumulative_pressure)
+median_cumulative_pressure_high
 
 
-sum_cummulative_pressure_high <- sum(high_pressure_counties$cummulative_pressure)
-sum_cummulative_pressure_high
+sum_cumulative_pressure_high <- sum(high_pressure_counties$cumulative_pressure)
+sum_cumulative_pressure_high
 
 high_pressure_counties_number <- length(high_pressure_counties$fips_new)
 high_pressure_counties_number
 
-total_pressure_per_county_high_pressure <- sum_cummulative_pressure_high/high_pressure_counties_number
+total_pressure_per_county_high_pressure <- sum_cumulative_pressure_high/high_pressure_counties_number
 total_pressure_per_county_high_pressure
 ```
 
 
 
 ```{r}
-# income_pressure_regression <- lm(cummulative_pressure ~ median_household_income, normalized_pressures_chr_data)
+# income_pressure_regression <- lm(cumulative_pressure ~ median_household_income, normalized_pressures_chr_data)
 # 
-# income_pressure_regression <- ggplot(data = normalized_pressures_chr_data, aes(x = median_household_income, y = cummulative_pressure)) +
+# income_pressure_regression <- ggplot(data = normalized_pressures_chr_data, aes(x = median_household_income, y = cumulative_pressure)) +
 #   geom_smooth(method = "lm")
 # 
 # income_pressure_regression
@@ -535,15 +539,19 @@ total_pressure_per_county_high_pressure
 
 ```{r}
 normalized_pressures_chr_data <- normalized_pressures_chr_data %>% 
-  mutate(pressure_quartile = ntile(cummulative_pressure, 4))
+  mutate(pressure_quartile = ntile(cumulative_pressure, 4)) 
+
+normalized_pressures_chr_data <- normalized_pressures_chr_data %>% 
+  mutate(rural_quartile = ntile(per_rural, 4)) 
 
 ```
 
 ```{r}
-second_quartile_cummulative_pressure <- normalized_pressures_chr_data %>% 
-  filter(pressure_quartile == 2) %>% 
+first_quartile_cumulative_pressure <- normalized_pressures_chr_data %>% 
+  filter(pressure_quartile == 1, rural_quartile == 4) %>% 
   select(fips_new,
-         cummulative_pressure,
+         rural_quartile,
+         cumulative_pressure,
          median_household_income,
          primary_care_phys_ratio,
          mental_health_providers_ratio,
@@ -565,17 +573,17 @@ second_quartile_cummulative_pressure <- normalized_pressures_chr_data %>%
          per_nativeHA_other_pacific_isl,
          per_hispanic)
 
-summary(second_quartile_cummulative_pressure)
+summary(first_quartile_cumulative_pressure)
 ```
 
 
 
-
 ```{r}
-third_quartile_cummulative_pressure <- normalized_pressures_chr_data %>% 
-  filter(pressure_quartile == 3) %>% 
+second_quartile_cumulative_pressure <- normalized_pressures_chr_data %>% 
+  filter(pressure_quartile == 2, rural_quartile == 4) %>% 
   select(fips_new,
-         cummulative_pressure,
+         rural_quartile,
+         cumulative_pressure,
          median_household_income,
          primary_care_phys_ratio,
          mental_health_providers_ratio,
@@ -597,15 +605,49 @@ third_quartile_cummulative_pressure <- normalized_pressures_chr_data %>%
          per_nativeHA_other_pacific_isl,
          per_hispanic)
 
-summary(third_quartile_cummulative_pressure)
+summary(second_quartile_cumulative_pressure)
+```
+
+
+
+
+```{r}
+third_quartile_cumulative_pressure <- normalized_pressures_chr_data %>% 
+  filter(pressure_quartile == 3, rural_quartile == 4) %>% 
+  select(fips_new,
+         rural_quartile,
+         cumulative_pressure,
+         median_household_income,
+         primary_care_phys_ratio,
+         mental_health_providers_ratio,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         years_potential_life_lost_rate,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
+         per_rural,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic)
+
+summary(third_quartile_cumulative_pressure)
 ```
 
 
 ```{r}
-fourth_quartile_cummulative_pressure <- normalized_pressures_chr_data %>% 
-  filter(pressure_quartile == 4) %>% 
+fourth_quartile_cumulative_pressure <- normalized_pressures_chr_data %>% 
+  filter(pressure_quartile == 4, rural_quartile == 4) %>% 
   select(fips_new,
-         cummulative_pressure,
+         rural_quartile,
+         cumulative_pressure,
          median_household_income,
          primary_care_phys_ratio,
          mental_health_providers_ratio,
@@ -628,7 +670,7 @@ fourth_quartile_cummulative_pressure <- normalized_pressures_chr_data %>%
          per_hispanic)
 
 
-summary(fourth_quartile_cummulative_pressure)
+summary(fourth_quartile_cumulative_pressure)
 
 ```
 

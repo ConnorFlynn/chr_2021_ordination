@@ -1,0 +1,288 @@
+---
+title: "alex connor county exploration"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(here)
+```
+
+```{r}
+normalized_pressures_chr_data <- read_csv(here("data/normalized_pressures_chr_data.csv"))
+```
+
+```{r}
+us_cumulative_pressure_sum <- sum(normalized_pressures_chr_data$cumulative_pressure)
+us_cumulative_pressure_sum
+
+cumulative_pressure_sum_per_county <- us_cumulative_pressure_sum/length(normalized_pressures_chr_data$fips)
+cumulative_pressure_sum_per_county
+
+
+```
+
+```{r}
+meade_county <- normalized_pressures_chr_data %>% 
+  filter(fips == 20119) %>% 
+  select(fips,
+         per_rural,
+         cumulative_pressure,
+         population,
+         air_pollution_avg_daily_pm2.5,
+         drinking_water_violation,
+         per_child_poverty,
+         income_ratio,
+         median_household_income,
+         primary_care_phys_ratio,
+         mental_health_providers_ratio,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         years_potential_life_lost_rate,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic,
+         life_expectancy,
+         child_mortality_rate,
+         infant_mortality_rate,
+         per_adults_diabetes,
+         per_uninsured_adults,
+         per_adult_obesity
+         )
+
+
+```
+
+```{r}
+haskell_county <- normalized_pressures_chr_data %>% 
+  filter(fips == 20081) %>% 
+  select(fips,
+         per_rural,
+         cumulative_pressure,
+         population,
+         air_pollution_avg_daily_pm2.5,
+         drinking_water_violation,
+         per_child_poverty,
+         income_ratio,
+         median_household_income,
+         primary_care_phys_ratio,
+         mental_health_providers_ratio,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         years_potential_life_lost_rate,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic,
+         life_expectancy,
+         child_mortality_rate,
+         infant_mortality_rate,
+         per_adults_diabetes,
+         per_uninsured_adults,
+         per_adult_obesity
+         )
+
+
+```
+
+```{r}
+meade_haskell <- bind_rows(meade_county, haskell_county)
+meade_haskell <- data.frame(meade_haskell)
+meade_haskell
+```
+
+
+```{r}
+sutter_county <- normalized_pressures_chr_data %>% 
+  filter(fips == "06101") %>% 
+  select(fips,
+         per_rural,
+         cumulative_pressure,
+         population,
+         air_pollution_avg_daily_pm2.5,
+         drinking_water_violation,
+         per_child_poverty,
+         income_ratio,
+         median_household_income,
+         primary_care_phys_ratio,
+         mental_health_providers_ratio,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         years_potential_life_lost_rate,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic,
+         life_expectancy,
+         child_mortality_rate,
+         infant_mortality_rate,
+         per_adults_diabetes,
+         per_uninsured_adults,
+         per_adult_obesity
+         )
+
+```
+
+
+```{r}
+nevada_county <- normalized_pressures_chr_data %>% 
+  filter(fips == "06057") %>% 
+  select(fips,
+         per_rural,
+         cumulative_pressure,
+         population,
+         air_pollution_avg_daily_pm2.5,
+         drinking_water_violation,
+         per_child_poverty,
+         income_ratio,
+         median_household_income,
+         primary_care_phys_ratio,
+         mental_health_providers_ratio,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         years_potential_life_lost_rate,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic,
+         life_expectancy,
+         child_mortality_rate,
+         infant_mortality_rate,
+         per_adults_diabetes,
+         per_uninsured_adults,
+         per_adult_obesity
+         )
+
+```
+
+```{r}
+sutter_nevada <- bind_rows(sutter_county, nevada_county)
+sutter_nevada <- data.frame(sutter_nevada)
+sutter_nevada
+```
+
+```{r}
+sioux_county <- normalized_pressures_chr_data %>% 
+  filter(fips == 19167) %>% 
+  select(fips,
+         per_rural,
+         cumulative_pressure,
+         population,
+         air_pollution_avg_daily_pm2.5,
+         drinking_water_violation,
+         per_child_poverty,
+         income_ratio,
+         median_household_income,
+         primary_care_phys_ratio,
+         mental_health_providers_ratio,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         years_potential_life_lost_rate,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic,
+         life_expectancy,
+         child_mortality_rate,
+         infant_mortality_rate,
+         per_adults_diabetes,
+         per_uninsured_adults,
+         per_adult_obesity
+         )
+
+
+```
+
+```{r}
+marion_county <- normalized_pressures_chr_data %>% 
+  filter(fips == 19125) %>% 
+  select(fips,
+         per_rural,
+         cumulative_pressure,
+         population,
+         air_pollution_avg_daily_pm2.5,
+         drinking_water_violation,
+         per_child_poverty,
+         income_ratio,
+         median_household_income,
+         primary_care_phys_ratio,
+         mental_health_providers_ratio,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         years_potential_life_lost_rate,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic,
+         life_expectancy,
+         child_mortality_rate,
+         infant_mortality_rate,
+         per_adults_diabetes,
+         per_uninsured_adults,
+         per_adult_obesity
+         )
+
+
+```
+
+```{r}
+sioux_marion <- bind_rows(sioux_county, marion_county)
+sioux_marion <- data.frame(sioux_marion)
+sioux_marion
+```
+
