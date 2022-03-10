@@ -1,0 +1,51 @@
+---
+title: "PCA"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(vegan)
+
+```
+
+
+```{r}
+data <- read_csv(here("data/normalized_pressures_chr_data.csv")) 
+
+data <- data %>% 
+  select(fips,
+         per_rural,
+         mean_pressure_disturbance_norm,
+         mean_pressure_ghg_norm,
+         mean_pressure_nutrient_norm,
+         mean_pressure_water_norm,
+         cumulative_pressure,
+         population,
+         air_pollution_avg_daily_pm2.5,
+         per_child_poverty,
+         median_household_income,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic,
+         life_expectancy,
+         per_adults_diabetes,
+         per_uninsured_adults,
+         per_adult_obesity)
+
+data <- data %>% 
+  na.rm()
+
+```
+
+```{r}
+my_rda <- rda(cumulative_pressure_df ~ per_rural + population + median_household_income + per_black + per_asian + per_hispanic, data)
+```
+
+```{r}
+cumulative_pressure_df <- data %>% 
+  select(fips, cumulative_pressure)
+```
+

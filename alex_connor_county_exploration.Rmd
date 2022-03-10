@@ -6,6 +6,8 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(here)
+library(tidyverse)
+library(estimatr)
 ```
 
 ```{r}
@@ -284,5 +286,430 @@ marion_county <- normalized_pressures_chr_data %>%
 sioux_marion <- bind_rows(sioux_county, marion_county)
 sioux_marion <- data.frame(sioux_marion)
 sioux_marion
+```
+
+```{r}
+cuming_county <- normalized_pressures_chr_data %>% 
+  filter(fips == 31039) %>% 
+  select(fips,
+         per_rural,
+         mean_pressure_disturbance_norm,
+         mean_pressure_ghg_norm,
+         mean_pressure_nutrient_norm,
+         mean_pressure_water_norm,
+         cumulative_pressure,
+         population,
+         air_pollution_avg_daily_pm2.5,
+         air_pollution_avg_daily_pm2.5_quartile,
+         drinking_water_violation,
+         per_child_poverty,
+         income_ratio,
+         median_household_income,
+         primary_care_phys_ratio,
+         mental_health_providers_ratio,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         years_potential_life_lost_rate,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic,
+         life_expectancy,
+         child_mortality_rate,
+         infant_mortality_rate,
+         per_adults_diabetes,
+         per_uninsured_adults,
+         per_adult_obesity
+         )
+
+
+```
+
+```{r}
+stanton_county <- normalized_pressures_chr_data %>% 
+  filter(fips == 31167) %>% 
+  select(fips,
+         per_rural,
+         mean_pressure_disturbance_norm,
+         mean_pressure_ghg_norm,
+         mean_pressure_nutrient_norm,
+         mean_pressure_water_norm,
+         cumulative_pressure,
+         population,
+         air_pollution_avg_daily_pm2.5,
+         air_pollution_avg_daily_pm2.5_quartile,
+         drinking_water_violation,
+         per_child_poverty,
+         income_ratio,
+         median_household_income,
+         primary_care_phys_ratio,
+         mental_health_providers_ratio,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         years_potential_life_lost_rate,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic,
+         life_expectancy,
+         child_mortality_rate,
+         infant_mortality_rate,
+         per_adults_diabetes,
+         per_uninsured_adults,
+         per_adult_obesity
+         )
+```
+
+```{r}
+cuming_stanton <- bind_rows(cuming_county, stanton_county)
+cuming_stanton <- data.frame(cuming_stanton)
+cuming_stanton
+```
+```{r}
+rural_poor_air_quality_counties <- normalized_pressures_chr_data %>% 
+  filter(per_rural > 80, air_pollution_avg_daily_pm2.5_quartile == 4) %>% 
+  select(fips,
+         county,
+         state,
+         per_rural,
+         mean_pressure_disturbance_norm,
+         mean_pressure_ghg_norm,
+         mean_pressure_nutrient_norm,
+         mean_pressure_water_norm,
+         cumulative_pressure,
+         population,
+         air_pollution_avg_daily_pm2.5,
+         air_pollution_avg_daily_pm2.5_quartile,
+         drinking_water_violation,
+         per_child_poverty,
+         income_ratio,
+         median_household_income,
+         primary_care_phys_ratio,
+         mental_health_providers_ratio,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         years_potential_life_lost_rate,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic,
+         life_expectancy,
+         child_mortality_rate,
+         infant_mortality_rate,
+         per_adults_diabetes,
+         per_uninsured_adults,
+         per_adult_obesity)
+```
+
+```{r}
+mean(rural_poor_air_quality_counties$mean_pressure_ghg_norm)
+```
+```{r}
+mean(normalized_pressures_chr_data$mean_pressure_ghg_norm)
+```
+```{r}
+mean(normalized_pressures_chr_data$population)
+mean(normalized_pressures_chr_data$per_rural, na.rm = TRUE)
+```
+
+
+
+```{r}
+normalized_pressures_chr_data <- normalized_pressures_chr_data %>% 
+  mutate(cumulative_pressure_quartile = ntile(cumulative_pressure, 4),
+         mean_pressure_ghg_quartile = ntile(mean_pressure_ghg_norm, 4))  
+  
+```
+
+```{r}
+high_pressure_counties <- normalized_pressures_chr_data %>% 
+  filter(cumulative_pressure > 1.75) %>% 
+  select(fips,
+         county,
+         state,
+         per_rural,
+         mean_pressure_disturbance_norm,
+         mean_pressure_ghg_norm,
+         mean_pressure_nutrient_norm,
+         mean_pressure_water_norm,
+         cumulative_pressure,
+         population,
+         air_pollution_avg_daily_pm2.5,
+         air_pollution_avg_daily_pm2.5_quartile,
+         drinking_water_violation,
+         per_child_poverty,
+         income_ratio,
+         median_household_income,
+         primary_care_phys_ratio,
+         mental_health_providers_ratio,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         years_potential_life_lost_rate,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic,
+         life_expectancy,
+         child_mortality_rate,
+         infant_mortality_rate,
+         per_adults_diabetes,
+         per_uninsured_adults,
+         per_adult_obesity)
+```
+
+```{r}
+mean(high_pressure_counties$air_pollution_avg_daily_pm2.5)
+mean(high_pressure_counties$per_low_birthweight, na.rm = TRUE)
+mean(high_pressure_counties$per_adults_diabetes)
+mean(high_pressure_counties$per_rural)
+mean(high_pressure_counties$population)
+```
+
+```{r}
+high_pressure_high_ghg_counties <- high_pressure_counties %>% 
+  filter(mean_pressure_ghg_quartile == 4)
+```
+
+```{r}
+mean(high_pressure_high_ghg_counties$air_pollution_avg_daily_pm2.5)
+mean(high_pressure_high_ghg_counties$per_low_birthweight, na.rm = TRUE)
+mean(high_pressure_high_ghg_counties$per_adults_diabetes)
+```
+
+```{r}
+all_rural_counties <- normalized_pressures_chr_data %>% 
+  filter(per_rural == 100)
+```
+
+```{r}
+median(all_rural_counties$cumulative_pressure)
+```
+```{r}
+median(normalized_pressures_chr_data$cumulative_pressure)
+```
+
+```{r}
+all_urban_counties <- normalized_pressures_chr_data %>% 
+  filter(per_rural < 5)
+```
+
+```{r}
+median(all_urban_counties$cumulative_pressure)
+```
+
+
+```{r}
+all_rural_food_production_counties <- all_rural_counties %>% 
+  filter(cumulative_pressure > 1) %>% 
+  select(fips,
+         county,
+         state,
+         per_rural,
+         mean_pressure_disturbance_norm,
+         mean_pressure_ghg_norm,
+         mean_pressure_nutrient_norm,
+         mean_pressure_water_norm,
+         cumulative_pressure,
+         population,
+         air_pollution_avg_daily_pm2.5,
+         air_pollution_avg_daily_pm2.5_quartile,
+         drinking_water_violation,
+         per_child_poverty,
+         income_ratio,
+         median_household_income,
+         primary_care_phys_ratio,
+         mental_health_providers_ratio,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         years_potential_life_lost_rate,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic,
+         life_expectancy,
+         child_mortality_rate,
+         infant_mortality_rate,
+         per_adults_diabetes,
+         per_uninsured_adults,
+         per_adult_obesity)
+```
+
+```{r}
+mean(all_rural_food_production_counties$population)
+mean(all_rural_food_production_counties$air_pollution_avg_daily_pm2.5)
+mean(all_rural_food_production_counties$per_low_birthweight)
+mean(all_rural_food_production_counties$per_adults_diabetes)
+mean(all_rural_food_production_counties$median_household_income)
+```
+
+
+```{r}
+all_rural_non_food_production_counties <- all_rural_counties %>% 
+  filter(cumulative_pressure <= 0.011) %>% 
+  select(fips,
+         county,
+         state,
+         per_rural,
+         mean_pressure_disturbance_norm,
+         mean_pressure_ghg_norm,
+         mean_pressure_nutrient_norm,
+         mean_pressure_water_norm,
+         cumulative_pressure,
+         population,
+         air_pollution_avg_daily_pm2.5,
+         air_pollution_avg_daily_pm2.5_quartile,
+         drinking_water_violation,
+         per_child_poverty,
+         income_ratio,
+         median_household_income,
+         primary_care_phys_ratio,
+         mental_health_providers_ratio,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         years_potential_life_lost_rate,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic,
+         life_expectancy,
+         child_mortality_rate,
+         infant_mortality_rate,
+         per_adults_diabetes,
+         per_uninsured_adults,
+         per_adult_obesity)
+```
+
+```{r}
+mean(all_rural_non_food_production_counties$population)
+mean(all_rural_non_food_production_counties$air_pollution_avg_daily_pm2.5, na.rm = TRUE)
+mean(all_rural_non_food_production_counties$per_low_birthweight, na.rm = TRUE)
+mean(all_rural_non_food_production_counties$per_adults_diabetes)
+mean(all_rural_non_food_production_counties$median_household_income, na.rm = TRUE)
+```
+
+```{r}
+all_urban_counties <- normalized_pressures_chr_data %>% 
+  filter(per_rural < 5 & cumulative_pressure < .05) %>% 
+  select(fips,
+         county,
+         state,
+         per_rural,
+         mean_pressure_disturbance_norm,
+         mean_pressure_ghg_norm,
+         mean_pressure_nutrient_norm,
+         mean_pressure_water_norm,
+         cumulative_pressure,
+         population,
+         air_pollution_avg_daily_pm2.5,
+         air_pollution_avg_daily_pm2.5_quartile,
+         drinking_water_violation,
+         per_child_poverty,
+         income_ratio,
+         median_household_income,
+         primary_care_phys_ratio,
+         mental_health_providers_ratio,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         years_potential_life_lost_rate,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
+         residential_segregation_black_white,
+         per_black,
+         per_asian,
+         per_nativeHA_other_pacific_isl,
+         per_hispanic,
+         life_expectancy,
+         child_mortality_rate,
+         infant_mortality_rate,
+         per_adults_diabetes,
+         per_uninsured_adults,
+         per_adult_obesity)
+```
+
+
+```{r}
+rural_cumulative_pressure_regression <- lm_robust(per_rural ~ cumulative_pressure, data = normalized_pressures_chr_data)
+summary(rural_cumulative_pressure_regression)
+```
+```{r}
+cumulative_pressure_income_regression <- lm_robust(air_pollution_avg_daily_pm2.5 ~ cumulative_pressure, data = all_rural_food_production_counties)
+summary(cumulative_pressure_income_regression)
+```
+```{r}
+ggplot(data = all_rural_food_production_counties, aes(x = cumulative_pressure, 
+                                                 y = air_pollution_avg_daily_pm2.5)) +
+  geom_smooth(method = "lm")
+```
+```{r}
+ggplot(data = all_rural_counties, aes(x = cumulative_pressure, 
+                                                 y = median_household_income)) +
+  geom_smooth(method = "lm")
+```
+
+```{r}
+median(all_rural_counties$population)
+median(normalized_pressures_chr_data$population)
+median(all_rural_counties$per_limited_access_healthy_food)
+median(normalized_pressures_chr_data$population)
 ```
 
