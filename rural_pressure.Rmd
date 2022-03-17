@@ -1,0 +1,132 @@
+---
+title: "Does being a more rural county mean there is more likely a higher cumulative pressure"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(estimatr)
+library(party)
+library(randomForest)
+options(scipen = 999)
+```
+
+```{r}
+sum_4_normalized_pressures_health_selective <- read_csv(here("data/sum_4_normalized_pressures_health_selective.csv"))
+```
+
+
+```{r}
+# What is the median cumulative pressure per county in the US
+median_cumulative_pressure_us <- median(sum_4_normalized_pressures_health_selective$sum_4_cumulative)
+median_cumulative_pressure_us
+```
+
+```{r}
+#What is the median percent rural per county in the US
+median_rural <- median(sum_4_normalized_pressures_health_selective$per_rural, na.rm = TRUE)
+median_rural
+```
+
+
+
+```{r}
+sum_4_normalized_pressures_health_selective <- sum_4_normalized_pressures_health_selective %>% 
+  mutate(sum_4_cumulative_quartile = ntile(sum_4_cumulative, 4),
+         per_rural_quartile = ntile(per_rural, 4))
+```
+
+```{r}
+fourth_quartile_pressure_counties <- sum_4_normalized_pressures_health_selective %>% 
+  filter(sum_4_cumulative_quartile == 4)
+
+median(fourth_quartile_pressure_counties$per_rural)
+```
+
+```{r}
+fourth_quartile_rural_counties <- sum_4_normalized_pressures_health_selective %>% 
+  filter(per_rural_quartile == 4)
+
+mean(fourth_quartile_rural_counties$per_rural)
+
+median(fourth_quartile_rural_counties$sum_4_cumulative)
+
+first_quartile_rural_counties <- sum_4_normalized_pressures_health_selective %>% 
+  filter(per_rural_quartile == 1)
+
+mean(first_quartile_rural_counties$per_rural)
+
+median(first_quartile_rural_counties$sum_4_cumulative)
+
+
+
+
+```
+
+
+```{r}
+lm_robust(sum_4_cumulative ~ per_rural, data = sum_4_normalized_pressures_health_selective)
+
+ggplot(data = fourth_quartile_pressure_counties, aes(x = sum_4_cumulative, 
+                                                               y = per_rural)) +
+  geom_smooth(method = "lm")
+```
+
+
+```{r}
+lm_robust(sum_4_cumulative ~ per_rural, data = fourth_quartile_pressure_counties)
+
+ggplot(data = fourth_quartile_pressure_counties, aes(x = sum_4_cumulative, 
+                                                               y = per_rural)) +
+  geom_smooth(method = "lm")
+```
+```{r}
+iowa <- sum_4_normalized_pressures_health_selective %>% 
+  filter(state == "Iowa")
+```
+
+
+```{r}
+na.omit(sum_4_normalized_pressures_health_selective)
+randomForest(formula = sum_4_cumulative ~ per_rural + median_household_income + population,     
+                 data = sum_4_normalized_pressures_health_selective)
+```
+```{r}
+first_quartile_pressure_counties <- sum_4_normalized_pressures_health_selective %>% 
+  filter(sum_4_cumulative_quartile == 1)
+```
+
+```{r}
+fourth_n_first <- full_join(first_quartile_pressure_counties, fourth_quartile_pressure_counties)
+
+fourth_n_first <- fourth_n_first %>%  
+   mutate(high_pressure = ifelse(sum_4_cumulative_quartile == 4, c("yes"), c("no")))
+
+
+
+```
+
+
+```{r}
+as.factor(fourth_n_first$high_pressure)
+
+fourth_n_first <- fourth_n_first %>% 
+  mutate(high_pressure_factor = as.factor(high_pressure)) %>% 
+  drop_na(per_rural, median_household_income) 
+
+
+
+rf <- randomForest(high_pressure_factor ~ per_rural + median_household_income + population,     
+                 data = fourth_n_first)
+
+print(rf)
+
+print(importance(fit,type = 2))
+```
+
+```{r}
+print(head(readingSkills))
+```
+

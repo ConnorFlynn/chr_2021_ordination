@@ -526,7 +526,7 @@ median(normalized_pressures_chr_data$cumulative_pressure)
 
 ```{r}
 all_urban_counties <- normalized_pressures_chr_data %>% 
-  filter(per_rural < 5)
+  filter(per_rural < 1)
 ```
 
 ```{r}
@@ -711,5 +711,49 @@ median(all_rural_counties$population)
 median(normalized_pressures_chr_data$population)
 median(all_rural_counties$per_limited_access_healthy_food)
 median(normalized_pressures_chr_data$population)
+
+median_low_birthweights <- median(normalized_pressures_chr_data$per_low_birthweight, na.rm = TRUE)
+
+median_air_quality <- median(normalized_pressures_chr_data$air_pollution_avg_daily_pm2.5, na.rm = TRUE)
+
+median_per_diabetes <- median(normalized_pressures_chr_data$per_adults_diabetes, na.rm = TRUE)
+
+median_income <- median(normalized_pressures_chr_data$median_household_income, na.rm = TRUE)
+```
+
+```{r}
+dream_county <- normalized_pressures_chr_data %>% 
+  filter(cumulative_pressure > 1.75, 
+         per_low_birthweight > median_low_birthweights,
+         air_pollution_avg_daily_pm2.5 > median_air_quality,
+         per_adults_diabetes > median_per_diabetes,
+         median_household_income < median_income
+         )
+```
+
+```{r}
+state_data <- normalized_pressures_chr_data %>% 
+  group_by(state) %>% 
+  summarise(cum_pressure = sum(cumulative_pressure),
+            median_rural = median(per_rural), 
+            median_state_income = median(median_household_income),
+            state_pop = sum(population))
+
+state_cumualative_pressure <- sum(state_data$cum_pressure)
+
+3155070 + 12671821 + 1934408 + 6732219 + 5639632 + 2913314 + 28995881 + 11689100 + 6137428 + 884659
+```
+
+```{r}
+library(usmap) #import the package
+library(ggplot2) #use ggplot2 to add layer for visualization
+```
+
+```{r}
+plot_usmap(regions = "states")
+plot_usmap(include = c("IA", "IL", "NB", "IN", "MN", "KS", "TX", "OH", "MO", "SD"))
+```
+```{r}
+
 ```
 
