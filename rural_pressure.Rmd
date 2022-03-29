@@ -11,6 +11,7 @@ library(estimatr)
 library(party)
 library(randomForest)
 options(scipen = 999)
+
 ```
 
 ```{r}
@@ -69,8 +70,8 @@ median(first_quartile_rural_counties$sum_4_cumulative)
 ```{r}
 lm_robust(sum_4_cumulative ~ per_rural, data = sum_4_normalized_pressures_health_selective)
 
-ggplot(data = fourth_quartile_pressure_counties, aes(x = sum_4_cumulative, 
-                                                               y = per_rural)) +
+ggplot(data = sum_4_normalized_pressures_health_selective, aes(x = per_rural, 
+                                                               y = sum_4_cumulative)) +
   geom_smooth(method = "lm")
 ```
 
@@ -89,10 +90,123 @@ iowa <- sum_4_normalized_pressures_health_selective %>%
 
 
 ```{r}
-na.omit(sum_4_normalized_pressures_health_selective)
-randomForest(formula = sum_4_cumulative ~ per_rural + median_household_income + population,     
-                 data = sum_4_normalized_pressures_health_selective)
+sum_4_normalized_pressures_health_selective_no_na <- sum_4_normalized_pressures_health_selective %>% 
+  drop_na(per_rural, median_household_income)
+
+
+rf1 <- randomForest(formula = sum_4_cumulative ~ per_rural + median_household_income + population, data = sum_4_normalized_pressures_health_selective_no_na, importance = TRUE)
+
+rf1
+
+varImpPlot(rf)
 ```
+
+```{r}
+sum_4_normalized_pressures_health_selective_no_na_health <- sum_4_normalized_pressures_health_selective %>% 
+  drop_na(per_rural, median_household_income, per_fair_poor_health, per_access_to_exercise, per_uninsured, primary_care_phys_quartile, mental_health_providers_quartile, per_child_poverty, air_pollution_avg_daily_pm2.5, drinking_water_violation_quartile, per_severe_house_cost_burden, per_severe_housing_problems, per_food_insecure, sum_4_cumulative, per_limited_access_healthy_food, per_black, per_asian, per_am_indian_alaska_native, per_nativeHA_other_pacific_isl, per_hispanic, population
+          )
+
+rf_health <- randomForest(per_fair_poor_health ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic,
+                          data = sum_4_normalized_pressures_health_selective_no_na_health, importance = TRUE)
+
+print(rf_health)
+
+print(importance(rf_health,type = 2))
+
+varImpPlot(rf_health, type = 2)
+
+
+```
+
+
+```{r}
+sum_4_normalized_pressures_health_selective_no_na_health <- sum_4_normalized_pressures_health_selective %>% 
+  drop_na(per_rural, median_household_income, per_low_birthweight, per_access_to_exercise, per_uninsured, primary_care_phys_quartile, mental_health_providers_quartile, per_child_poverty, air_pollution_avg_daily_pm2.5, drinking_water_violation_quartile, per_severe_house_cost_burden, per_severe_housing_problems, per_food_insecure, sum_4_cumulative, per_limited_access_healthy_food, per_black, per_asian, per_am_indian_alaska_native, per_nativeHA_other_pacific_isl, per_hispanic, population
+          )
+
+rf_low_birthweight <- randomForest(per_low_birthweight ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic,
+                          data = sum_4_normalized_pressures_health_selective_no_na_health, importance = TRUE)
+
+print(rf_low_birthweight)
+
+print(importance(rf_low_birthweight,type = 2))
+
+varImpPlot(rf_low_birthweight, type = 2)
+```
+
+
+```{r}
+sum_4_normalized_pressures_health_selective_no_na_health <- sum_4_normalized_pressures_health_selective %>% 
+  drop_na(per_rural, median_household_income, per_low_birthweight, per_access_to_exercise, per_uninsured, primary_care_phys_quartile, mental_health_providers_quartile, per_child_poverty, air_pollution_avg_daily_pm2.5, drinking_water_violation_quartile, per_severe_house_cost_burden, per_severe_housing_problems, per_food_insecure, sum_4_cumulative, per_limited_access_healthy_food, per_black, per_asian, per_am_indian_alaska_native, per_nativeHA_other_pacific_isl, per_hispanic, population
+          )
+
+rf_low_birthweight <- randomForest(per_fair_poor_health ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic,
+                          data = sum_4_normalized_pressures_health_selective_no_na_health, importance = TRUE)
+
+print(rf_low_birthweight)
+
+print(importance(rf_low_birthweight,type = 2))
+
+varImpPlot(rf_low_birthweight, type = 2)
+```
+
+
+```{r}
+sum_4_normalized_pressures_health_selective_no_na_health <- sum_4_normalized_pressures_health_selective %>% 
+  drop_na(per_rural, median_household_income, life_expectancy, per_access_to_exercise, per_uninsured, primary_care_phys_quartile, mental_health_providers_quartile, per_child_poverty, air_pollution_avg_daily_pm2.5, drinking_water_violation_quartile, per_severe_house_cost_burden, per_severe_housing_problems, per_food_insecure, sum_4_cumulative, per_limited_access_healthy_food, per_black, per_asian, per_am_indian_alaska_native, per_nativeHA_other_pacific_isl, per_hispanic, population
+          )
+
+rf_life_expectancy <- randomForest(life_expectancy ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic,
+                          data = sum_4_normalized_pressures_health_selective_no_na_health, importance = TRUE)
+
+print(rf_life_expectancy)
+
+print(importance(rf_life_expectancy,type = 2))
+
+varImpPlot(rf_life_expectancy, type = 2)
+```
+
+
+
+
+
+```{r}
+sum_4_normalized_pressures_health_selective_no_na_health <- sum_4_normalized_pressures_health_selective %>% 
+  drop_na(per_rural, median_household_income, per_freq_mental_distress, per_access_to_exercise, per_uninsured, primary_care_phys_quartile, mental_health_providers_quartile, per_child_poverty, air_pollution_avg_daily_pm2.5, drinking_water_violation_quartile, per_severe_house_cost_burden, per_severe_housing_problems, per_food_insecure, sum_4_cumulative, per_limited_access_healthy_food, per_black, per_asian, per_am_indian_alaska_native, per_nativeHA_other_pacific_isl, per_hispanic, population
+          )
+
+rf_per_frequent_mental_distress <- randomForest(per_freq_mental_distress ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic,
+                          data = sum_4_normalized_pressures_health_selective_no_na_health, importance = TRUE)
+
+print(rf_per_frequent_mental_distress)
+
+print(importance(rf_per_frequent_mental_distress,type = 2))
+
+varImpPlot(rf_per_frequent_mental_distress, type = 2)
+```
+
+
+
+
+```{r}
+sum_4_normalized_pressures_health_selective_no_na_health <- sum_4_normalized_pressures_health_selective %>% 
+  drop_na(per_rural, median_household_income, per_freq_physical_distress, per_access_to_exercise, per_uninsured, primary_care_phys_quartile, mental_health_providers_quartile, per_child_poverty, air_pollution_avg_daily_pm2.5, drinking_water_violation_quartile, per_severe_house_cost_burden, per_severe_housing_problems, per_food_insecure, sum_4_cumulative, per_limited_access_healthy_food, per_black, per_asian, per_am_indian_alaska_native, per_nativeHA_other_pacific_isl, per_hispanic, population
+          )
+
+rf_per_frequent_physical_distress <- randomForest(per_freq_physical_distress ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic,
+                          data = sum_4_normalized_pressures_health_selective_no_na_health, importance = TRUE)
+
+print(rf_per_frequent_physical_distress)
+
+print(importance(rf_per_frequent_physical_distress,type = 2))
+
+varImpPlot(rf_per_frequent_physical_distress, type = 2)
+```
+
+
+
+
+
 ```{r}
 first_quartile_pressure_counties <- sum_4_normalized_pressures_health_selective %>% 
   filter(sum_4_cumulative_quartile == 1)
@@ -114,7 +228,7 @@ as.factor(fourth_n_first$high_pressure)
 
 fourth_n_first <- fourth_n_first %>% 
   mutate(high_pressure_factor = as.factor(high_pressure)) %>% 
-  drop_na(per_rural, median_household_income) 
+  drop_na(per_rural, median_household_income, residential_segregation_nonwhite_white) 
 
 
 
@@ -123,10 +237,30 @@ rf <- randomForest(high_pressure_factor ~ per_rural + median_household_income + 
 
 print(rf)
 
-print(importance(fit,type = 2))
+print(importance(rf,type = 2))
+
+varImpPlot(rf)
+```
+
+
+
+
+```{r}
+
 ```
 
 ```{r}
-print(head(readingSkills))
+test_forest <- randomForest(sum_4_cumulative ~ sum_1_ghg + sum_1_water +  sum_1_disturbance + sum_1_nutrient, data = sum_4_normalized_pressures_health_selective)
+
+print(test_forest)
+
+importance(test_forest, type = 2)
+
+
+```
+
+
+```{r}
+
 ```
 
