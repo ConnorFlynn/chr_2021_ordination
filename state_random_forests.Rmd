@@ -17,6 +17,9 @@ options(scipen = 999)
 sum_4_normalized_pressures_health_selective <- read_csv(here("data/sum_4_normalized_pressures_health_selective.csv"))
 ```
 
+6 States with highest cumulative pressure of food production
+
+
 ```{r}
 state_data <- sum_4_normalized_pressures_health_selective %>% 
   group_by(state) %>% 
@@ -29,87 +32,242 @@ state_data <- sum_4_normalized_pressures_health_selective %>%
 ```{r}
 # filter state data to get top 6 states regarding cumulative pressure, filter for those states
 
-sum_4_normalized_pressures_health_selective_states <- sum_4_normalized_pressures_health_selective %>% 
+sum_4_normalized_pressures_health_selective_top_states <- sum_4_normalized_pressures_health_selective %>% 
   filter(state == "Iowa" | state == "Illionis"|state == "Nebraska"| state == "Indiana"| state =="Minnesota"| state =="Kansas")
 
 ```
 
 
 ```{r}
-median(sum_4_normalized_pressures_health_selective_states$sum_4_cumulative)
+median(sum_4_normalized_pressures_health_selective_top_states$sum_4_cumulative)
 median(sum_4_normalized_pressures_health_selective$sum_4_cumulative)
-max(sum_4_normalized_pressures_health_selective_states$sum_4_cumulative)
+max(sum_4_normalized_pressures_health_selective_top_states$sum_4_cumulative)
 max(sum_4_normalized_pressures_health_selective$sum_4_cumulative)
-min(sum_4_normalized_pressures_health_selective_states$sum_4_cumulative)
+min(sum_4_normalized_pressures_health_selective_top_states$sum_4_cumulative)
 ```
 
 ```{r}
-sum_4_normalized_pressures_health_selective_no_na_health <- sum_4_normalized_pressures_health_selective_states %>% 
+sum_4_normalized_pressures_health_selective_no_na_top_states <- sum_4_normalized_pressures_health_selective_top_states %>% 
   drop_na(per_fair_poor_health, per_low_birthweight, per_access_to_exercise, life_expectancy, per_freq_mental_distress, per_freq_mental_distress, per_adult_obesity, median_household_income, per_rural, per_access_to_exercise, per_uninsured, primary_care_phys_quartile, mental_health_providers_quartile, per_child_poverty, air_pollution_avg_daily_pm2.5, drinking_water_violation_quartile, per_severe_house_cost_burden, per_severe_housing_problems, per_food_insecure, sum_4_cumulative, per_limited_access_healthy_food, per_black, per_asian, per_am_indian_alaska_native, per_nativeHA_other_pacific_isl, per_hispanic, population, per_smokers, per_physically_inactive, per_excessive_drinking, per_flu_vaccinated, per_completed_hs, per_some_college, traffic_volume, per_broadband_access
           )
 ```
 
 ```{r}
-rf_per_fair_poor_health <- randomForest(per_fair_poor_health ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
-                          data = sum_4_normalized_pressures_health_selective_no_na_health, importance = TRUE)
+rf_per_fair_poor_health_top_states <- randomForest(per_fair_poor_health ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_top_states, importance = TRUE)
 
-print(rf_per_fair_poor_health)
+print(rf_per_fair_poor_health_top_states)
 
-print(importance(rf_per_fair_poor_health,type = 2))
+print(importance(rf_per_fair_poor_health_top_states,type = 2))
 
-varImpPlot(rf_per_fair_poor_health, type = 2)
+varImpPlot(rf_per_fair_poor_health_top_states, type = 2)
 ```
 ```{r}
-rf_life_expectancy <- randomForest(life_expectancy ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
-                          data = sum_4_normalized_pressures_health_selective_no_na_health, importance = TRUE)
+rf_life_expectancy_top_states <- randomForest(life_expectancy ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_top_states, importance = TRUE)
 
-print(rf_life_expectancy)
+print(rf_life_expectancy_top_states)
 
-print(importance(rf_life_expectancy,type = 2))
+print(importance(rf_life_expectancy_top_states,type = 2))
 
-varImpPlot(rf_life_expectancy, type = 2)
-```
-
-```{r}
-rf_per_low_birthweight <- randomForest(per_low_birthweight ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
-                          data = sum_4_normalized_pressures_health_selective_no_na_health, importance = TRUE)
-
-print(rf_per_low_birthweight)
-
-print(importance(rf_per_low_birthweight,type = 2))
-
-varImpPlot(rf_per_low_birthweight, type = 2)
+varImpPlot(rf_life_expectancy_top_states, type = 2)
 ```
 
 ```{r}
-rf_per_freq_mental_distress <- randomForest(per_freq_mental_distress ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
-                          data = sum_4_normalized_pressures_health_selective_no_na_health, importance = TRUE)
+rf_per_low_birthweight_top_states <- randomForest(per_low_birthweight ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_top_states, importance = TRUE)
 
-print(rf_per_freq_mental_distress)
+print(rf_per_low_birthweight_top_states)
 
-print(importance(rf_per_freq_mental_distress,type = 2))
+print(importance(rf_per_low_birthweight_top_states,type = 2))
 
-varImpPlot(rf_per_freq_mental_distress, type = 2)
+varImpPlot(rf_per_low_birthweight_top_states, type = 2)
 ```
 
 ```{r}
-rf_per_freq_physical_distress <- randomForest(per_freq_physical_distress ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
-                          data = sum_4_normalized_pressures_health_selective_no_na_health, importance = TRUE)
+rf_per_freq_mental_distress_top_states <- randomForest(per_freq_mental_distress ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_top_states, importance = TRUE)
 
-print(rf_per_freq_physical_distress)
+print(rf_per_freq_mental_distress_top_states)
 
-print(importance(rf_per_freq_physical_distress,type = 2))
+print(importance(rf_per_freq_mental_distress_top_states,type = 2))
 
-varImpPlot(rf_per_freq_physical_distress, type = 2)
+varImpPlot(rf_per_freq_mental_distress_top_states, type = 2)
+```
+
+```{r}
+rf_per_freq_physical_distress_top_states <- randomForest(per_freq_physical_distress ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_top_states, importance = TRUE)
+
+print(rf_per_freq_physical_distress_top_states)
+
+print(importance(rf_per_freq_physical_distress_top_states,type = 2))
+
+varImpPlot(rf_per_freq_physical_distress_top_states, type = 2)
 ```
 ```{r}
-rf_per_adult_obesisty <- randomForest(per_adult_obesity ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
-                          data = sum_4_normalized_pressures_health_selective_no_na_health, importance = TRUE)
+rf_per_adult_obesisty_top_states <- randomForest(per_adult_obesity ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_top_states, importance = TRUE)
 
-print(rf_per_adult_obesisty)
+print(rf_per_adult_obesisty_top_states)
 
-print(importance(rf_per_adult_obesisty,type = 2))
+print(importance(rf_per_adult_obesisty_top_states,type = 2))
 
-varImpPlot(rf_per_adult_obesisty, type = 2)
+varImpPlot(rf_per_adult_obesisty_top_states, type = 2)
+```
+
+
+Country Level (all counties)
+
+```{r}
+sum_4_normalized_pressures_health_selective_no_na_health_all_counties <- sum_4_normalized_pressures_health_selective %>% 
+  drop_na(per_fair_poor_health, per_low_birthweight, per_access_to_exercise, life_expectancy, per_freq_mental_distress, per_freq_mental_distress, per_adult_obesity, median_household_income, per_rural, per_access_to_exercise, per_uninsured, primary_care_phys_quartile, mental_health_providers_quartile, per_child_poverty, air_pollution_avg_daily_pm2.5, drinking_water_violation_quartile, per_severe_house_cost_burden, per_severe_housing_problems, per_food_insecure, sum_4_cumulative, per_limited_access_healthy_food, per_black, per_asian, per_am_indian_alaska_native, per_nativeHA_other_pacific_isl, per_hispanic, population, per_smokers, per_physically_inactive, per_excessive_drinking, per_flu_vaccinated, per_completed_hs, per_some_college, traffic_volume, per_broadband_access
+          )
+```
+
+
+```{r}
+rf_per_fair_poor_health_all_counties <- randomForest(per_fair_poor_health ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_health_all_counties, importance = TRUE)
+
+print(rf_per_fair_poor_health_all_counties)
+
+print(importance(rf_per_fair_poor_health_all_counties,type = 2))
+
+varImpPlot(rf_per_fair_poor_health_all_counties, type = 2)
+```
+```{r}
+rf_life_expectancy_all_counties <- randomForest(life_expectancy ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_health_all_counties, importance = TRUE)
+
+print(rf_life_expectancy_all_counties)
+
+print(importance(rf_life_expectancy_all_counties,type = 2))
+
+varImpPlot(rf_life_expectancy_all_counties, type = 2)
+```
+```{r}
+rf_per_low_birthweight_all_counties <- randomForest(per_low_birthweight ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_health_all_counties, importance = TRUE)
+
+print(rf_per_low_birthweight_all_counties)
+
+print(importance(rf_per_low_birthweight_all_counties,type = 2))
+
+varImpPlot(rf_per_low_birthweight_all_counties, type = 2)
+```
+```{r}
+rf_per_freq_mental_distress_all_counties <- randomForest(per_freq_mental_distress ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_health_all_counties, importance = TRUE)
+
+print(rf_per_freq_mental_distress_all_counties)
+
+print(importance(rf_per_freq_mental_distress_all_counties,type = 2))
+
+varImpPlot(rf_per_freq_mental_distress_all_counties, type = 2)
+```
+
+```{r}
+rf_per_freq_physical_distress_all_counties <- randomForest(per_freq_physical_distress ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_health_all_counties, importance = TRUE)
+
+print(rf_per_freq_physical_distress_all_counties)
+
+print(importance(rf_per_freq_physical_distress_all_counties,type = 2))
+
+varImpPlot(rf_per_freq_physical_distress_all_counties, type = 2)
+```
+
+```{r}
+rf_per_adult_obesity_all_counties <- randomForest(per_adult_obesity ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_health_all_counties, importance = TRUE)
+
+print(rf_per_adult_obesity_all_counties)
+
+print(importance(rf_per_adult_obesity_all_counties,type = 2))
+
+varImpPlot(rf_per_adult_obesity_all_counties, type = 2)
+```
+Top 500 Counties
+
+
+```{r}
+# Filter data for the top 500 counties regarding cumulative pressure
+
+sum_4_normalized_pressures_health_selective_top_counties <-  sum_4_normalized_pressures_health_selective %>% 
+  filter(sum_4_cumulative > 0.002725337)
+
+```
+
+
+```{r}
+# drop na's 
+sum_4_normalized_pressures_health_selective_no_na_top_counties <- sum_4_normalized_pressures_health_selective_top_counties %>% 
+  drop_na(per_fair_poor_health, per_low_birthweight, per_access_to_exercise, life_expectancy, per_freq_mental_distress, per_freq_mental_distress, per_adult_obesity, median_household_income, per_rural, per_access_to_exercise, per_uninsured, primary_care_phys_quartile, mental_health_providers_quartile, per_child_poverty, air_pollution_avg_daily_pm2.5, drinking_water_violation_quartile, per_severe_house_cost_burden, per_severe_housing_problems, per_food_insecure, sum_4_cumulative, per_limited_access_healthy_food, per_black, per_asian, per_am_indian_alaska_native, per_nativeHA_other_pacific_isl, per_hispanic, population, per_smokers, per_physically_inactive, per_excessive_drinking, per_flu_vaccinated, per_completed_hs, per_some_college, traffic_volume, per_broadband_access)
+```
+
+```{r}
+rf_per_fair_poor_health_top_counties <- randomForest(per_fair_poor_health ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_top_counties, importance = TRUE)
+
+print(rf_per_fair_poor_health_top_counties)
+
+print(importance(rf_per_fair_poor_health_top_counties,type = 2))
+
+varImpPlot(rf_per_fair_poor_health_top_counties, type = 2)
+```
+
+```{r}
+rf_life_expectancy_top_counties <- randomForest(life_expectancy ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_top_counties, importance = TRUE)
+
+print(rf_life_expectancy_top_counties)
+
+print(importance(rf_life_expectancy_top_counties,type = 2))
+
+varImpPlot(rf_life_expectancy_top_counties, type = 2)
+```
+
+```{r}
+rf_per_low_birthweight_top_counties <- randomForest(per_low_birthweight ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_top_counties, importance = TRUE)
+
+print(rf_per_low_birthweight_top_counties)
+
+print(importance(rf_per_low_birthweight_top_counties,type = 2))
+
+varImpPlot(rf_per_low_birthweight_top_counties, type = 2)
+```
+```{r}
+rf_per_freq_mental_distress_top_counties <- randomForest(per_freq_mental_distress ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_top_counties, importance = TRUE)
+
+print(rf_per_freq_mental_distress_top_counties)
+
+print(importance(rf_per_freq_mental_distress_top_counties,type = 2))
+
+varImpPlot(rf_per_freq_mental_distress_top_counties, type = 2)
+```
+
+```{r}
+rf_per_freq_physical_distress_top_counties <- randomForest(per_freq_physical_distress ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_top_counties, importance = TRUE)
+
+print(rf_per_freq_physical_distress_top_counties)
+
+print(importance(rf_per_freq_physical_distress_top_counties,type = 2))
+
+varImpPlot(rf_per_freq_physical_distress_top_counties, type = 2)
+```
+
+```{r}
+rf_per_adult_obesity_top_counties <- randomForest(per_adult_obesity ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_top_counties, importance = TRUE)
+
+print(rf_per_adult_obesity_top_counties)
+
+print(importance(rf_per_adult_obesity_top_counties,type = 2))
+
+varImpPlot(rf_per_adult_obesity_top_counties, type = 2)
 ```
 
