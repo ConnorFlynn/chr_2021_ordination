@@ -6,6 +6,11 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(vegan)
+library(tidyverse)
+library(h2o)
+library(readr)
+# set seed for reproducible results
+set.seed(42)
 
 ```
 
@@ -16,36 +21,86 @@ data <- read_csv(here("data/normalized_pressures_chr_data.csv"))
 data <- data %>% 
   select(fips,
          per_rural,
-         mean_pressure_disturbance_norm,
-         mean_pressure_ghg_norm,
-         mean_pressure_nutrient_norm,
-         mean_pressure_water_norm,
          cumulative_pressure,
          population,
          air_pollution_avg_daily_pm2.5,
          per_child_poverty,
+         income_ratio,
          median_household_income,
+         per_unemployed,
+         per_food_insecure,
+         per_limited_access_healthy_food,
+         per_severe_house_cost_burden,
+         per_low_birthweight,
+         avg_num_physically_unhealthy_days,
+         child_mortality_rate,
+         per_freq_physical_distress,
+         per_freq_mental_distress,
+         air_pollution_avg_daily_pm2.5,
          residential_segregation_black_white,
          per_black,
          per_asian,
          per_nativeHA_other_pacific_isl,
          per_hispanic,
          life_expectancy,
+         child_mortality_rate,
+         infant_mortality_rate,
          per_adults_diabetes,
          per_uninsured_adults,
-         per_adult_obesity)
+         per_adult_obesity
+         )
 
-data <- data %>% 
-  na.rm()
 
+data_t <- setNames(data.frame(t(data[ , - 1])), data[ , 1])  # Transpose data
+data_t 
+
+data_transpose <- t(data)
+
+data_wider <- pivot_wider(data = data, id_cols = .)
+ 
 ```
 
 ```{r}
-my_rda <- rda(cumulative_pressure_df ~ per_rural + population + median_household_income + per_black + per_asian + per_hispanic, data)
+h2o.no_progress()  # turn off progress bars for brevity
+h2o.init(max_mem_size = "5g")  # connect to H2O instance
 ```
 
 ```{r}
-cumulative_pressure_df <- data %>% 
-  select(fips, cumulative_pressure)
+# convert data to h2o object
+data.h2o <- as.h2o(data)
+
+ 
+data.h2o$fips <-as.numeric(data.h2o$fips)
+# run PCA
+pca <- h2o.prcomp(
+  training_frame = data.h2o,
+  pca_method = "GramSVD",
+  k = ncol(data.h2o), 
+  transform = "STANDARDIZE", 
+  impute_missing = TRUE,
+  max_runtime_secs = 1000)
+pca
+```
+
+```{r}
+pca@model$model_summary %>% 
+  add_rownames() %>% 
+  tidyr::pivot_longer(-rowname) %>% 
+  filter(
+    rowname == "Proportion of Variance") %>% 
+  mutate(
+    pc = stringr::str_replace(name, "pc", "") %>% as.integer()) %>% 
+  ggplot(aes(x = pc, y=cumsum(value))) +
+  geom_point() + geom_line() +
+  theme(axis.text.x = element_text(angle=90, hjust = 1))  +
+  ylab("Cumulative Proportion of Variance Explained")
+```
+
+```{r}
+pca@model$eigenvectors %>% 
+  as.data.frame() %>% 
+  mutate(feature = row.names(.)) %>%
+  ggplot(aes(pc1, reorder(feature, pc1))) +
+  geom_point()
 ```
 

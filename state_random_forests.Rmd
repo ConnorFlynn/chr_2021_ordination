@@ -271,3 +271,64 @@ print(importance(rf_per_adult_obesity_top_counties,type = 2))
 varImpPlot(rf_per_adult_obesity_top_counties, type = 2)
 ```
 
+```{r}
+sum_4_normalized_pressures_health_selective_north_carolina <- sum_4_normalized_pressures_health_selective %>% 
+  filter(state == "North Carolina")
+```
+
+
+```{r}
+sum_4_normalized_pressures_health_selective_no_na_north_carolina <- sum_4_normalized_pressures_health_selective_north_carolina %>% 
+  drop_na(per_fair_poor_health, per_low_birthweight, per_access_to_exercise, life_expectancy, per_freq_mental_distress, per_freq_mental_distress, per_adult_obesity, median_household_income, per_rural, per_access_to_exercise, per_uninsured, primary_care_phys_quartile, mental_health_providers_quartile, per_child_poverty, air_pollution_avg_daily_pm2.5, drinking_water_violation_quartile, per_severe_house_cost_burden, per_severe_housing_problems, per_food_insecure, sum_4_cumulative, per_limited_access_healthy_food, per_black, per_asian, per_am_indian_alaska_native, per_nativeHA_other_pacific_isl, per_hispanic, population, per_smokers, per_physically_inactive, per_excessive_drinking, per_flu_vaccinated, per_completed_hs, per_some_college, traffic_volume, per_broadband_access)
+```
+
+
+```{r}
+rf_per_fair_poor_health_north_carolina <- randomForest(per_fair_poor_health ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_north_carolina, importance = TRUE)
+
+print(rf_per_fair_poor_health_north_carolina)
+
+print(importance(rf_per_fair_poor_health_north_carolina,type = 2))
+
+varImpPlot(rf_per_fair_poor_health_north_carolina, type = 2)
+```
+
+```{r}
+rf_per_low_birthweight_north_carolina <- randomForest(per_low_birthweight ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation_quartile + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access,
+                          data = sum_4_normalized_pressures_health_selective_no_na_north_carolina, importance = TRUE)
+
+print(rf_per_low_birthweight_north_carolina)
+
+print(importance(rf_per_low_birthweight_north_carolina,type = 2))
+
+varImpPlot(rf_per_low_birthweight_north_carolina, type = 2)
+```
+
+
+```{r}
+median(sum_4_normalized_pressures_health_selective$sum_4_cumulative)
+
+median(sum_4_normalized_pressures_health_selective_no_na_north_carolina$sum_4_cumulative)
+
+mean(sum_4_normalized_pressures_health_selective$sum_4_cumulative)
+
+mean(sum_4_normalized_pressures_health_selective_no_na_north_carolina$sum_4_cumulative)
+
+```
+
+
+```{r}
+lm_robust(sum_4_cumulative ~ per_black, data = sum_4_normalized_pressures_health_selective_no_na_north_carolina)
+
+ggplot(data = sum_4_normalized_pressures_health_selective_no_na_north_carolina, aes(x = per_black, y = sum_4_cumulative)) + 
+  geom_smooth(method = "lm")
+```
+
+```{r}
+lm_robust(sum_4_cumulative ~ per_adult_obesity, data = sum_4_normalized_pressures_health_selective_no_na_north_carolina)
+
+ggplot(data = sum_4_normalized_pressures_health_selective_no_na_north_carolina, aes(x = per_adult_obesity, y = sum_4_cumulative)) + 
+  geom_smooth(method = "lm")
+```
+

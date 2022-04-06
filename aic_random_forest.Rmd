@@ -1,0 +1,58 @@
+---
+title: "AIC with Random Forest"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(estimatr)
+library(party)
+library(randomForest)
+library(stats)
+options(scipen = 999)
+```
+
+
+```{r}
+sum_4_normalized_pressures_health_selective <- read_csv(here("data/sum_4_normalized_pressures_health_selective.csv"))
+```
+
+
+```{r}
+# drop na's - 3,133 to 2,983 counties - make a map of these counties!
+
+sum_4_normalized_pressures_health_selective_no_na_health_all_counties <- sum_4_normalized_pressures_health_selective %>% 
+  drop_na(per_fair_poor_health, per_low_birthweight, per_access_to_exercise, life_expectancy, per_freq_mental_distress, per_freq_mental_distress, per_adult_obesity, median_household_income, per_rural, per_access_to_exercise, per_uninsured, primary_care_phys_quartile, mental_health_providers_quartile, per_child_poverty, air_pollution_avg_daily_pm2.5, drinking_water_violation, per_severe_house_cost_burden, per_severe_housing_problems, per_food_insecure, sum_4_cumulative, per_limited_access_healthy_food, per_black, per_asian, per_am_indian_alaska_native, per_nativeHA_other_pacific_isl, per_hispanic, population, per_smokers, per_physically_inactive, per_excessive_drinking, per_flu_vaccinated, per_completed_hs, per_some_college, traffic_volume, per_broadband_access, Region, state
+          )
+```
+
+```{r}
+model1_per_low_birthweight <- randomForest(per_low_birthweight ~ per_rural + median_household_income + population + per_access_to_exercise + per_uninsured + primary_care_phys_quartile + mental_health_providers_quartile + per_child_poverty + air_pollution_avg_daily_pm2.5 +  drinking_water_violation + per_severe_house_cost_burden + per_severe_housing_problems + per_food_insecure + sum_4_cumulative + per_limited_access_healthy_food + per_black + per_asian + per_am_indian_alaska_native + per_nativeHA_other_pacific_isl + per_hispanic + per_smokers + per_physically_inactive + per_excessive_drinking + per_flu_vaccinated + per_completed_hs + per_some_college + traffic_volume + per_broadband_access + Region + state, data = sum_4_normalized_pressures_health_selective_no_na_health_all_counties)
+
+
+print(model1_per_low_birthweight)
+
+print(importance(model1_per_low_birthweight, type = 2))
+
+varImpPlot(model1_per_low_birthweight, type = 2)
+
+
+```
+```{r}
+model1 <- randomForest(per_low_birthweight ~ per_rural, data = sum_4_normalized_pressures_health_selective_no_na_health_all_counties)
+
+
+
+model2 <- randomForest(per_low_birthweight ~ per_rural + per_smokers, data = sum_4_normalized_pressures_health_selective_no_na_health_all_counties)
+
+model3 <- randomForest(per_low_birthweight ~ per_rural + per_smokers + median_household_income, data = sum_4_normalized_pressures_health_selective_no_na_health_all_counties)
+
+
+AIC(model1, model2, model3)
+
+```
+
+

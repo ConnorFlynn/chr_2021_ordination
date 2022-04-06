@@ -81,9 +81,26 @@ sum_to_1_pressures <- chr_data_pressures %>%
 ```
 
 ```{r}
-sum_4_normalized_pressures_health_selective <- sum_to_1_pressures %>% 
+regions <- read_csv(here("data/us_state_regions.csv"))
+
+regions <- regions %>% 
+  rename(state = State)
+```
+
+
+```{r}
+sum_1_pressures_regions <- full_join(sum_to_1_pressures, regions)
+```
+
+
+
+
+```{r}
+sum_4_normalized_pressures_health_selective <- sum_1_pressures_regions %>% 
   select(fips,
          state,
+         Region,
+         Division,
          county,
          sum_1_disturbance,
          sum_1_water,
@@ -138,7 +155,16 @@ sum_4_normalized_pressures_health_selective <- sum_to_1_pressures %>%
          per_non_hispanic_white,
          residential_segregation_black_white,
          residential_segregation_nonwhite_white,
-         per_rural)
+         per_rural,
+         per_smokers,
+         per_physically_inactive, 
+         per_excessive_drinking,
+         per_flu_vaccinated,
+         per_completed_hs, 
+         per_some_college,
+         traffic_volume,
+         per_broadband_access
+         )
 
 write_csv(sum_4_normalized_pressures_health_selective, here("data/sum_4_normalized_pressures_health_selective.csv"))
 ```
